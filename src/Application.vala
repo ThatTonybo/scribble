@@ -32,7 +32,6 @@ public class Scribble.Application : Gtk.Application {
     }
 
     protected override void activate () {
-        // Main window
         var main_window = new MainWindow (this);
 
         // (previous settings)

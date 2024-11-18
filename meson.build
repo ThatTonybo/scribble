@@ -20,6 +20,7 @@ executable(
     gresource,
     'src' / 'Application.vala',
     'src' / 'MainWindow.vala',
+    'src' / 'Handler.vala',
     dependencies: [
         dependency('granite-7'),
         dependency('gtk4')
