@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/thattonybo/scribble/" id="com.thattonybo.scribble">
+    <key name="window-width" type="i">
+      <default>800</default>
+      <summary>Most recent window width</summary>
+      <description>Most recent window width</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>600</default>
+      <summary>Most recent window height</summary>
+      <description>Most recent window height</description>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Whether the window was maximized on last run</summary>
+      <description>Whether the window was maximized on last run</description>
+    </key>
+    <key name="sidebar-position" type="i">
+      <default>200</default>
+      <summary>Most recent sidebar position</summary>
+      <description>Most recent sidebar position</description>
+    </key>
+  </schema>
+</schemalist>

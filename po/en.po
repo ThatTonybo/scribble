@@ -1,0 +1,47 @@
+# English translations for com.thattonybo.scribble package.
+# Copyright (C) 2024 THE com.thattonybo.scribble'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.thattonybo.scribble package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.thattonybo.scribble\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-18 02:47+0000\n"
+"PO-Revision-Date: 2024-11-17 14:01+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/MainWindow.vala:10 data/scribble.desktop.in:6
+#: data/scribble.metainfo.xml.in:5
+msgid "Scribble"
+msgstr "Scribble"
+
+#: src/MainWindow.vala:40
+msgid "New Note"
+msgstr ""
+
+#: src/MainWindow.vala:61
+msgid "Hello world"
+msgstr ""
+
+#: data/scribble.desktop.in:7 data/scribble.metainfo.xml.in:6
+msgid "Manage your notes"
+msgstr "Manage your notes"
+
+#: data/scribble.desktop.in:9
+msgid "Notes;"
+msgstr "Notes;"
+
+#: data/scribble.metainfo.xml.in:14
+msgid ""
+"Scribble is a straightforward notes application. It helps you to manage your "
+"notes, organize your ideas and collate content together."
+msgstr ""
+"Scribble is a straightforward notes application. It helps you to manage your "
+"notes, organize your ideas and collate content together."

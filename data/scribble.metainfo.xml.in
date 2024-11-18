@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.thattonybo.scribble</id>
+  
+  <name>Scribble</name>
+  <summary>Manage your notes</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  
+  <content_rating type="oars-1.1" />
+  
+  <description>
+    <p>
+      Scribble is a straightforward notes application. It helps you to manage your notes, organize your ideas and collate content together.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">com.thattonybo.scribble.desktop</launchable>
+</component>

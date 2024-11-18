@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Scribble
+Comment=Manage your notes
+Categories=Office;WordProcessor;
+Keywords=Notes;
+
+Icon=com.thattonybo.scribble
+Exec=com.thattonybo.scribble
+Terminal=false

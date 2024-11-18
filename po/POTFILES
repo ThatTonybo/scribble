@@ -1,0 +1,4 @@
+src/Application.vala
+src/MainWindow.vala
+data/scribble.desktop.in
+data/scribble.metainfo.xml.in
