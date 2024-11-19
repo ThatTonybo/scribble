@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.thattonybo.scribble\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-18 02:47+0000\n"
+"POT-Creation-Date: 2024-11-19 12:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,12 +22,12 @@ msgstr ""
 msgid "Scribble"
 msgstr ""
 
-#: src/MainWindow.vala:40
+#: src/MainWindow.vala:41
 msgid "New Note"
 msgstr ""
 
-#: src/MainWindow.vala:61
-msgid "Hello world"
+#: src/MainWindow.vala:48
+msgid "Untitled note"
 msgstr ""
 
 #: data/scribble.desktop.in:7 data/scribble.metainfo.xml.in:6

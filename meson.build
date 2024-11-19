@@ -23,7 +23,8 @@ executable(
     'src' / 'Handler.vala',
     dependencies: [
         dependency('granite-7'),
-        dependency('gtk4')
+        dependency('gtk4'),
+        dependency('sqlite3')
     ],
     install: true
 )

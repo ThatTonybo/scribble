@@ -41,9 +41,12 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         new_note_button_box.append (new Gtk.Label (_("New Note")));
 
         var new_note_button = new Gtk.Button () {
-            child = new_note_button_box,
-            sensitive = false
+            child = new_note_button_box
         };
+
+        new_note_button.clicked.connect (() => {
+            Scribble.Application.handler.create_note (_("Untitled note"), "");
+        });
 
         var actionbar = new Gtk.ActionBar ();
         actionbar.get_style_context ().add_class(Granite.STYLE_CLASS_FLAT);
@@ -59,7 +62,6 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         var main_content = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         main_content.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
         main_content.append (main_header);
-        main_content.append (new Gtk.Label(_("Hello world")));
 
         // Layout
         var paned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL) {

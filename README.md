@@ -2,6 +2,10 @@
 Manage your notes
 
 ## Build
+Requires sqlite3:
+```
+sudo apt-get install libsqlite3-dev
+```
 Build with meson and ninja:
 ```
 meson build --prefix=/usr

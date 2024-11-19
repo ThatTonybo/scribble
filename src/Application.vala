@@ -5,6 +5,7 @@
 
 public class Scribble.Application : Gtk.Application {
     public static GLib.Settings settings;
+    public static Handler handler;
     
     public Application () {
         Object (
@@ -12,14 +13,18 @@ public class Scribble.Application : Gtk.Application {
             flags: ApplicationFlags.FLAGS_NONE
         );
     }
-    
+
     static construct {
         settings = new Settings ("com.thattonybo.scribble");
+        handler = new Handler ();
     }
-    
+
     protected override void startup () {
         base.startup ();
-        
+
+        // Database
+        handler.init_database ();
+
         // Dark mode
         unowned var granite_settings = Granite.Settings.get_default ();
         unowned var gtk_settings = Gtk.Settings.get_default ();
@@ -37,11 +42,11 @@ public class Scribble.Application : Gtk.Application {
         // (previous settings)
         settings.bind ("window-height", main_window, "default-height", GLib.SettingsBindFlags.DEFAULT);
         settings.bind ("window-width", main_window, "default-width", GLib.SettingsBindFlags.DEFAULT);
-        
+
         if (settings.get_boolean ("window-maximized")) {
             main_window.maximize ();
         }
-        
+
         settings.bind ("window-maximized", main_window, "maximized", GLib.SettingsBindFlags.SET);
 
         // Show main window
