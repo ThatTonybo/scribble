@@ -52,6 +52,21 @@ public class Scribble.Handler : Object {
 
         db_opened ();
     }
+    
+    public void clear_database () {
+        string db_path = Environment.get_user_data_dir () + db_path;
+		File db_file = File.new_for_path (db_path);
+
+		if (db_file.query_exists ()) {
+			try {
+				db_file.delete ();
+
+				init_database ();
+			} catch (Error err) {
+				critical ("Failed to delete database file: %s\n", err.message);
+			}
+		}
+    }
 
     private void init_tables () {
         string query = """
@@ -80,26 +95,33 @@ public class Scribble.Handler : Object {
 	}
 
     // Get all notes
-	public Note[] get_all_notes () {
+	public GenericArray<Scribble.Objects.Note> get_all_notes () {
 	    string query = "SELECT id, title, created_at FROM Notes;";
 	    Sqlite.Statement statement;
 
 	    db.prepare_v2 (query, query.length, out statement);
 
-	    Note[] notes = {};
+	    GenericArray<Scribble.Objects.Note> notes = new GenericArray<Scribble.Objects.Note> ();
 
 	    while (statement.step () == Sqlite.ROW) {
-	        Note note = Note() {
-	            id = statement.column_text (0),
-	            title = statement.column_text (1),
-	            content_md = statement.column_text (2),
-	            created_at = statement.column_text (3)
-	        };
+	        Scribble.Objects.Note note = new Scribble.Objects.Note ();
 
-	        notes += note;
+	        note.id = statement.column_text (0);
+	        note.title = statement.column_text (1);
+	        note.content_md = statement.column_text (2);
+	        note.created_at = statement.column_text (3);
+
+	        notes.add (note);
 	    }
 
 	    return notes;
+	}
+
+    // Get a count of how many notes are in the database
+    public int get_notes_count () {
+	    var notes = get_all_notes ();
+
+	    return notes.length;
 	}
 
     // Create a note

@@ -21,6 +21,8 @@ executable(
     'src' / 'Application.vala',
     'src' / 'MainWindow.vala',
     'src' / 'Handler.vala',
+    'src' / 'objects' / 'Note.vala',
+    'src' / 'widgets' / 'NoteRow.vala',
     dependencies: [
         dependency('granite-7'),
         dependency('gtk4'),
