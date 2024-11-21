@@ -29,14 +29,20 @@ public struct Scribble.Note {
 
 public class Scribble.Handler : Object {
     public static string db_path;
+    public string db_err_msg;
     public Sqlite.Database db;
-    public string err_msg;
+
+    public ListStore notes_liststore { get; public set; }
 
     public signal void db_opened ();
     public signal void notes_updated ();
 
     static construct {
         db_path = Environment.get_user_data_dir () + "/com.thattonybo.scribble/database.db";
+    }
+    
+    construct {
+        notes_liststore = new ListStore (typeof (Scribble.Objects.Note));
     }
 
     public void init_database () {
@@ -49,10 +55,11 @@ public class Scribble.Handler : Object {
         }
 
         init_tables();
+        fill_notes_liststore ();
 
         db_opened ();
     }
-    
+
     public void clear_database () {
         string db_path = Environment.get_user_data_dir () + db_path;
 		File db_file = File.new_for_path (db_path);
@@ -78,11 +85,19 @@ public class Scribble.Handler : Object {
             );
         """;
 
-        int ec = db.exec (query, null, out err_msg);
+        int ec = db.exec (query, null, out db_err_msg);
 
         if (ec != Sqlite.OK) {
-            critical ("Failed to create database table: %s\n", err_msg);
+            critical ("Failed to create database table: %s\n", db_err_msg);
         }
+    }
+
+    private void fill_notes_liststore () {
+        var notes = get_all_notes ();
+
+        notes.foreach((note) => {
+            notes_liststore.append (note);
+        });
     }
 
 	private void create_dir (string dir) {
@@ -93,6 +108,11 @@ public class Scribble.Handler : Object {
 			GLib.DirUtils.create_with_parents (path, 0775);
 		}
 	}
+
+	// Used to find a note in the list store by ID
+    private EqualFunc<string> equal_func = (a, b) => {
+        return ((Scribble.Objects.Note) a).id == ((Scribble.Objects.Note) b).id;
+    };
 
     // Get all notes
 	public GenericArray<Scribble.Objects.Note> get_all_notes () {
@@ -143,28 +163,38 @@ public class Scribble.Handler : Object {
 			warning ("Failed to create note: %i: %s", db.errcode (), db.errmsg ());
 		}
 
+        // Add to list store
+        var note = new Scribble.Objects.Note ();
+        
+        note.id = id;
+        note.title = title;
+        note.content_md = content;
+        note.created_at = "i have no idea";
+        
+        notes_liststore.append (note);
+
 		notes_updated ();
 
 		return statement.step () == Sqlite.DONE;
 	}
 
     // Get a note by ID
-	public Note get_note (string id) {
+	public Scribble.Objects.Note get_note (string id) {
 	    string query = "SELECT * FROM Notes WHERE id = $id;";
 	    Sqlite.Statement statement;
 
 	    db.prepare_v2 (query, query.length, out statement);
 	    statement.bind_text (statement.bind_parameter_index ("$id"), id);
 
-	    Note note = Note();
+	    Scribble.Objects.Note note = new Scribble.Objects.Note ();
 
 	    if (statement.step () == Sqlite.ROW) {
-	        note = Note() {
-	            id = statement.column_text (0),
-	            title = statement.column_text (1),
-	            content_md = statement.column_text (2),
-	            created_at = statement.column_text (3)
-	        };
+	        note = new Scribble.Objects.Note ();
+
+	        note.id = statement.column_text (0);
+	        note.title = statement.column_text (1);
+	        note.content_md = statement.column_text (2);
+	        note.created_at = statement.column_text (3);
 	    }
 
 	    return note;
@@ -183,6 +213,20 @@ public class Scribble.Handler : Object {
 			warning ("Failed to update title of note with ID \"%s\": %i: %s", id, db.errcode (), db.errmsg ());
 		}
 
+        // Update in list store
+        var temp_note = new Scribble.Objects.Note ();
+        temp_note.id = id;
+
+		uint position = -1;
+        notes_liststore.find_with_equal_func (temp_note, equal_func, out position);
+
+        if (position != -1) {
+            var note = (Scribble.Objects.Note) notes_liststore.get_object (position);
+            note.title = title;
+        } else {
+            warning ("Failed to update title of note with ID \"%s\": position in list store returned as -1", id);
+        }
+
 		notes_updated ();
 
         return statement.step () == Sqlite.DONE;
@@ -200,6 +244,20 @@ public class Scribble.Handler : Object {
 	    if (statement.step () != Sqlite.DONE) {
 			warning ("Failed to update content of note with ID \"%s\": %i: %s", id, db.errcode (), db.errmsg ());
 		}
+
+		// Update in list store
+        var temp_note = new Scribble.Objects.Note ();
+        temp_note.id = id;
+
+		uint position = -1;
+        notes_liststore.find_with_equal_func (temp_note, equal_func, out position);
+
+        if (position != -1) {
+            var note = (Scribble.Objects.Note) notes_liststore.get_object (position);
+            note.content_md = content;
+        } else {
+            warning ("Failed to update title of note with ID \"%s\": position in list store returned as -1", id);
+        }
 
 		notes_updated ();
 

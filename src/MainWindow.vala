@@ -44,7 +44,9 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         // (section list box)
         notes_listbox = new Gtk.ListBox ();
 
-        update_notes_list ();
+        //update_notes_list ();
+        //notes_listbox.bind_model (playback_manager.queue_liststore, create_queue_row);
+        notes_listbox.bind_model (Scribble.Application.handler.notes_liststore, create_note_row);
 
         var sidebar_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 2);
         sidebar_box.append (notes_section_label);
@@ -81,9 +83,17 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         sidebar.append (actionbar);
 
         // Main content
+        
+        // temp code to test db updates
+        /*var btntest = new Gtk.Button.with_label("test");
+        btntest.clicked.connect(() => {
+            Scribble.Application.handler.update_note_title ("e7cbfed2-cf96-4cbf-97ea-a7c8b23f27a3", "new title woo woo");
+        });*/
+        
         var main_content = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         main_content.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
         main_content.append (main_header);
+        main_content.append (btntest);
 
         // Layout
         var paned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL) {
@@ -103,42 +113,15 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         // Save sidebar position to settings
         Scribble.Application.settings.bind ("sidebar-position", paned, "position", GLib.SettingsBindFlags.DEFAULT);
 
-        // Subscribe to notes being updated, to keep the sidebar list up to date
-        Scribble.Application.handler.notes_updated.connect(() => {
-            update_notes_list ();
-        });
-
         // Subscribe to notes being selected in the sidebar
         notes_listbox.row_selected.connect ((row) => {
             debug ("row clicked: %s", row.name);
         });
     }
 
-    // Update the sidebar notes list
-    public void update_notes_list () {
-        GenericArray<Scribble.Objects.Note> notes_list = Scribble.Application.handler.get_all_notes ();
-
-        bool iterate_and_delete_rows = true;
-
-        // Iterate over the list box to remove existing rows...
-        while (iterate_and_delete_rows == true) {
-            Gtk.ListBoxRow row = notes_listbox.get_row_at_index (0);
-
-            if (row == null) {
-                iterate_and_delete_rows = false;
-            } else {
-                notes_listbox.remove (row);
-            }
-        };
-
-        // ...before adding the new rows
-        notes_list.foreach ((note) => {
-            Scribble.Widgets.NoteRow note_row = new Scribble.Widgets.NoteRow (note.title);
-
-            notes_listbox.append (note_row);
-
-            notes_listbox.select_row (note_row);
-            notes_listbox.row_selected (note_row);
-        });
+    // Creates a new note row for the notes list
+    private Gtk.Widget create_note_row (GLib.Object object) {
+        unowned var note = (Scribble.Objects.Note) object;
+        return new Scribble.Widgets.NoteRow (note);
     }
 }

@@ -4,24 +4,28 @@
  */
 
 public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
-    public string title { get; construct; }
+    public Scribble.Objects.Note note { get; construct; }
 
-
-    public NoteRow (string title) {
-        Object (title: title);
+    public NoteRow (Scribble.Objects.Note note) {
+        Object (note: note);
     }
 
     construct {
-        var title_label = new Gtk.Label (title) {
+        var title_label = new Gtk.Label (note.title) {
             halign = START,
             hexpand = true,
             ellipsize = Pango.EllipsizeMode.MIDDLE,
             margin_end = 9
         };
-        
+
         title_label.add_css_class (Granite.STYLE_CLASS_H3_LABEL);
-        
-        var content_label = new Gtk.Label ("No additional content") {
+
+        var content = note.content_md;
+        if (content == "") {
+            content = "No additional content";
+        }
+
+        var content_label = new Gtk.Label (content) {
             halign = START,
             hexpand = true,
             vexpand = true,
@@ -34,7 +38,7 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
             margin_start = 6,
             margin_end = 6
         };
-        
+
         box.append (title_label);
         box.append (content_label);
 

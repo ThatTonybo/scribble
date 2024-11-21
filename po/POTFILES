@@ -1,5 +1,7 @@
 src/Application.vala
 src/Handler.vala
 src/MainWindow.vala
+src/objects/Note.vala
+src/widgets/NoteRow.vala
 data/scribble.desktop.in
 data/scribble.metainfo.xml.in
