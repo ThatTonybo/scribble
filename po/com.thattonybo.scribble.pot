@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.thattonybo.scribble\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-19 12:51+0000\n"
+"POT-Creation-Date: 2024-11-21 23:02+1100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/MainWindow.vala:10 data/scribble.desktop.in:6
+#: src/MainWindow.vala:12 data/scribble.desktop.in:6
 #: data/scribble.metainfo.xml.in:5
 msgid "Scribble"
 msgstr ""
 
-#: src/MainWindow.vala:41
+#. Sidebar
+#. (section title label)
+#. TEMPORARY - notes should be sorted by creation date/time, then there should be a section for each
+#. notable period eg. today, yesterday, last 30 days, October, November, etc...
+#: src/MainWindow.vala:38
+msgid "Today"
+msgstr ""
+
+#: src/MainWindow.vala:65
 msgid "New Note"
 msgstr ""
 
-#: src/MainWindow.vala:48
+#: src/MainWindow.vala:72
 msgid "Untitled note"
 msgstr ""
 
