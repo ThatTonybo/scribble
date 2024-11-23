@@ -11,6 +11,7 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
     }
 
     construct {
+        // Title
         var title_label = new Gtk.Label (note.title) {
             halign = START,
             hexpand = true,
@@ -20,12 +21,8 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
 
         title_label.add_css_class (Granite.STYLE_CLASS_H3_LABEL);
 
-        var content = note.content_md;
-        if (content == "") {
-            content = "No additional content";
-        }
-
-        var content_label = new Gtk.Label (content) {
+        // Content
+        var content_label = new Gtk.Label (note.content_md) {
             halign = START,
             hexpand = true,
             vexpand = true,
@@ -34,6 +31,7 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
             margin_end = 9
         };
 
+        // Layout
         var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 2) {
             margin_start = 6,
             margin_end = 6
@@ -43,5 +41,19 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
         box.append (content_label);
 
         child = box;
+
+        // Bindings
+        note.bind_property ("title", title_label, "label", BindingFlags.SYNC_CREATE);
+        note.bind_property ("content_md", content_label, "label", BindingFlags.SYNC_CREATE, (binding, srcval, ref targetval) => {
+            string content = (string) srcval;
+
+		    if (content == "") {
+		        targetval = "No additional content";
+		    } else {
+		        targetval = content;
+		    }
+
+		    return true;
+        });
     }
 }

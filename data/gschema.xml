@@ -21,5 +21,10 @@
       <summary>Most recent sidebar position</summary>
       <description>Most recent sidebar position</description>
     </key>
+    <key name="note-selected" type="s">
+      <default>""</default>
+      <summary>The UUID of the last selected note</summary>
+      <description>The UUID of the last selected note</description>
+    </key>
   </schema>
 </schemalist>

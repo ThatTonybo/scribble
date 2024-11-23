@@ -110,13 +110,13 @@ public class Scribble.Handler : Object {
 	}
 
 	// Used to find a note in the list store by ID
-    private EqualFunc<string> equal_func = (a, b) => {
+    public EqualFunc<string> equal_func = (a, b) => {
         return ((Scribble.Objects.Note) a).id == ((Scribble.Objects.Note) b).id;
     };
 
     // Get all notes
 	public GenericArray<Scribble.Objects.Note> get_all_notes () {
-	    string query = "SELECT id, title, created_at FROM Notes;";
+	    string query = "SELECT * FROM Notes;";
 	    Sqlite.Statement statement;
 
 	    db.prepare_v2 (query, query.length, out statement);
@@ -165,12 +165,12 @@ public class Scribble.Handler : Object {
 
         // Add to list store
         var note = new Scribble.Objects.Note ();
-        
+
         note.id = id;
         note.title = title;
         note.content_md = content;
         note.created_at = "i have no idea";
-        
+
         notes_liststore.append (note);
 
 		notes_updated ();
