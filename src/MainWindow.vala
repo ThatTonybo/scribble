@@ -86,10 +86,13 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         // Main content
 
         // (note content)
-        var note_content_label = new Gtk.Label (selected_note.content_md) {
-            halign = START,
-            margin_start = 12
-        };
+        var note_content = new Gtk.TextView ();
+        var note_content_buffer = note_content.get_buffer ();
+
+        note_content_buffer.changed.connect (() => {
+            selected_note.content_md = note_content_buffer.text;
+            Scribble.Application.handler.update_note_content (selected_note.id, note_content_buffer.text);
+        });
 
         //var main_content_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         //main_content_box.append (note_content_label);
@@ -97,7 +100,7 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         var main_content = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         main_content.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
         main_content.append (main_header);
-        main_content.append (note_content_label);
+        main_content.append (note_content);
 
         // Layout
         var paned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL) {
@@ -146,19 +149,19 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
 
         notes_listbox.row_selected.connect ((row) => {
             var note_row = (Scribble.Widgets.NoteRow) row;
+            
+            // Get note
+            var note = Scribble.Application.handler.get_note (note_row.note.id);
 
             // Set selected note
-            selected_note = (Scribble.Objects.Note) note_row.note;
-            
-            warning (selected_note.content_md);
-            warning (note_content_label.label);
+            selected_note = note;
+
+            // Update note buffer
+            note_content_buffer.set_text (note.content_md);
 
             // Save last selected note to settings
-            Scribble.Application.settings.set_string ("note-selected", note_row.note.id);
+            Scribble.Application.settings.set_string ("note-selected", note.id);
         });
-        
-        // Bindings
-        selected_note.bind_property ("content_md", note_content_label, "label", BindingFlags.SYNC_CREATE);
     }
 
     // Creates a new note row for the notes list
