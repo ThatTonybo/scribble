@@ -145,7 +145,7 @@ public class Scribble.Handler : Object {
 	}
 
     // Create a note
-	public bool create_note (string title, string content) {
+	public string create_note (string title, string content) {
 	    string id = GLib.Uuid.string_random ();
 	    string query = """
             INSERT INTO Notes (id, title, content_md, created_at)
@@ -175,7 +175,7 @@ public class Scribble.Handler : Object {
 
 		notes_updated ();
 
-		return statement.step () == Sqlite.DONE;
+		return id;
 	}
 
     // Get a note by ID

@@ -25,6 +25,21 @@ public class Scribble.Application : Gtk.Application {
         // Database
         handler.init_database ();
 
+        // Actions
+        var quit_action = new SimpleAction ("quit", null);
+
+        add_action (quit_action);
+        set_accels_for_action ("app.quit",  {"<Control>q"});
+        quit_action.activate.connect (quit);
+
+        var delete_selected_note_action = new SimpleAction ("delete_selected_note", null);
+
+        add_action (delete_selected_note_action);
+        set_accels_for_action ("app.delete_selected_note",  {"<Control>BackSpace"});
+        delete_selected_note_action.activate.connect (() => {
+            // TODO: Note deletion code, and a confirmation prompt (like Tasks/Calendar/Files/etc.)
+        });
+
         // Dark mode
         unowned var granite_settings = Granite.Settings.get_default ();
         unowned var gtk_settings = Gtk.Settings.get_default ();

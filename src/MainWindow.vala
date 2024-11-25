@@ -6,16 +6,38 @@
 public class Scribble.MainWindow : Gtk.ApplicationWindow {
     public Scribble.Objects.Note selected_note;
     public Gtk.ListBox notes_listbox;
+    public bool allow_note_content_save_changes;
 
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            title: _("Scribble")
+            title: _("(note title) - Scribble")
         );
     }
 
     construct {
         selected_note = new Scribble.Objects.Note ();
+        allow_note_content_save_changes = true;
+
+        // Menu
+        var header_menu_quit_button = new Gtk.Button () {
+            action_name = "app.quit",
+            child = new Granite.AccelLabel.from_action_name ("Quit", "app.quit")
+        };
+        header_menu_quit_button.add_css_class (Granite.STYLE_CLASS_MENUITEM);
+
+        var header_menu_popover = new Gtk.Popover () {
+            child = header_menu_quit_button
+        };
+        header_menu_popover.add_css_class (Granite.STYLE_CLASS_MENU);
+
+        var header_menu_button = new Gtk.MenuButton () {
+            icon_name = "open-menu-symbolic",
+            primary = true,
+            popover = header_menu_popover,
+            tooltip_markup = Granite.markup_accel_tooltip ({}, "Menu")
+        };
+        header_menu_button.add_css_class (Granite.STYLE_CLASS_LARGE_ICONS);
 
         // Headers
         var sidebar_header = new Gtk.HeaderBar () {
@@ -27,18 +49,20 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         sidebar_header.pack_start (new Gtk.WindowControls (Gtk.PackType.START));
 
         var main_header = new Gtk.HeaderBar () {
-            show_title_buttons = false
+            show_title_buttons = false,
+            title_widget = new Gtk.Label ("")
         };
 
         main_header.add_css_class (Granite.STYLE_CLASS_FLAT);
         main_header.pack_end (new Gtk.WindowControls (Gtk.PackType.END));
+        main_header.pack_end (header_menu_button);
 
         // Sidebar
 
         // (section title label)
         // TEMPORARY - notes should be sorted by creation date/time, then there should be a section for each
         // notable period eg. today, yesterday, last 30 days, October, November, etc...
-        var notes_section_label = new Gtk.Label (_("Today")) {
+        var notes_section_label = new Gtk.Label (_("Notes")) {
             halign = START,
             margin_start = 12
         };
@@ -70,7 +94,28 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         };
 
         new_note_button.clicked.connect (() => {
-            Scribble.Application.handler.create_note (_("Untitled note"), "");
+            var id = Scribble.Application.handler.create_note (_("Untitled note"), "");
+
+            var temp_note = new Scribble.Objects.Note ();
+            temp_note.id = id;
+
+            // Select the newly created note
+            uint position = -1;
+            Scribble.Application.handler.notes_liststore.find_with_equal_func (temp_note, Scribble.Application.handler.equal_func, out position);
+
+            if (position != -1) {
+                int index = (int) position;
+                var row = notes_listbox.get_row_at_index (index);
+
+                if (row != null) {
+                    notes_listbox.select_row (row);
+                    notes_listbox.row_selected (row);
+                } else {
+                    warning ("Failed to find note with ID \"%s\" in list box: position in list box returned NULL", id);
+                }
+            } else {
+                warning ("Failed to find note with ID \"%s\": position in list store returned as -1", id);
+            }
         });
 
         var actionbar = new Gtk.ActionBar ();
@@ -89,18 +134,31 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         var note_content = new Gtk.TextView ();
         var note_content_buffer = note_content.get_buffer ();
 
+        note_content.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
+        note_content.set_focusable (true);
+
+        // (save note content changes to database)
         note_content_buffer.changed.connect (() => {
-            selected_note.content_md = note_content_buffer.text;
-            Scribble.Application.handler.update_note_content (selected_note.id, note_content_buffer.text);
+            if (allow_note_content_save_changes == true) {
+                selected_note.content_md = note_content_buffer.text;
+                Scribble.Application.handler.update_note_content (selected_note.id, note_content_buffer.text);
+            }
         });
 
-        //var main_content_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
-        //main_content_box.append (note_content_label);
+        var main_scrollable_area = new Gtk.ScrolledWindow () {
+            child = note_content,
+            hexpand = true,
+            vexpand = true,
+            hscrollbar_policy = Gtk.PolicyType.NEVER,
+            margin_start = 12,
+            margin_end = 12,
+            margin_top = 6
+        };
 
         var main_content = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         main_content.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
         main_content.append (main_header);
-        main_content.append (note_content);
+        main_content.append (main_scrollable_area);
 
         // Layout
         var paned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL) {
@@ -121,7 +179,7 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         var last_selected_note = Scribble.Application.settings.get_string ("note-selected");
 
         if (last_selected_note != "") {
-            // todo: db check to ensure the note still exists?
+            // TODO: Database check to ensure the note still exists?
 
             var temp_note = new Scribble.Objects.Note ();
             temp_note.id = last_selected_note;
@@ -147,20 +205,23 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
         // Save sidebar position to settings
         Scribble.Application.settings.bind ("sidebar-position", paned, "position", GLib.SettingsBindFlags.DEFAULT);
 
+        // When a new note is selected in the sidebar/list box...
         notes_listbox.row_selected.connect ((row) => {
             var note_row = (Scribble.Widgets.NoteRow) row;
-            
+
             // Get note
             var note = Scribble.Application.handler.get_note (note_row.note.id);
 
             // Set selected note
             selected_note = note;
 
-            // Update note buffer
-            note_content_buffer.set_text (note.content_md);
-
             // Save last selected note to settings
             Scribble.Application.settings.set_string ("note-selected", note.id);
+
+            // Update note content buffer
+            allow_note_content_save_changes = false;
+            note_content_buffer.set_text (note.content_md);
+            allow_note_content_save_changes = true;
         });
     }
 

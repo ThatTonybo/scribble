@@ -1,0 +1,12 @@
+/*
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * SPDX-FileCopyrightText: 2024 ThatTonybo <thattonybo@gmail.com>
+ */
+
+row.note:focus {
+    background-color: @base_color;
+}
+
+row.note:focus * {
+    color: @text_color;
+}
