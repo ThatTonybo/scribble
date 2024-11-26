@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>com.thattonybo.scribble</id>
-  
+
   <name>Scribble</name>
   <summary>Manage your notes</summary>
-  
+
   <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  
+
   <content_rating type="oars-1.1" />
-  
+
   <description>
     <p>
       Scribble is a straightforward notes application. It helps you to manage your notes, organize your ideas and collate content together.
     </p>
   </description>
-  
+
+  <url type="homepage">https://thattonybo.com/scribble</url>
+  <url type="bugtracker">https://github.com/ThatTonybo/scribble/issues</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/ThatTonybo/scribble/blob/main/data/screenshots/screenshot.png?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/ThatTonybo/scribble/blob/main/data/screenshots/screenshot-dark.png?raw=true</image>
+    </screenshot>
+  </screenshots>
+
+  <branding>
+    <color type="primary">#e8c99a</color>
+  </branding>
+  <custom>
+    <value key="x-appcenter-color-primary">#e8c99a</value>
+  </custom>
+
+  <developer id="org.elementaryos">
+    <name>ThatTonybo</name>
+  </developer>
+  <project_group>ThatTonybo</project_group>
+  <update_contact>thattonybo_AT_gmail.com</update_contact>
+
   <launchable type="desktop-id">com.thattonybo.scribble.desktop</launchable>
+
+  <releases>
+  </releases>
 </component>
