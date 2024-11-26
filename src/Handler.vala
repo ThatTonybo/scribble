@@ -276,6 +276,19 @@ public class Scribble.Handler : Object {
 			warning ("Failed to delete note with ID \"%s\": %i: %s", id, db.errcode (), db.errmsg ());
 		}
 
+		// Remove from list store
+        var temp_note = new Scribble.Objects.Note ();
+        temp_note.id = id;
+
+		uint position = -1;
+        notes_liststore.find_with_equal_func (temp_note, equal_func, out position);
+
+        if (position != -1) {
+            notes_liststore.remove (position);
+        } else {
+            warning ("Failed to delete note with ID \"%s\": position in list store returned as -1", id);
+        }
+
         notes_updated ();
 
         return statement.step () == Sqlite.DONE;

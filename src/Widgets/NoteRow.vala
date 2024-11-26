@@ -11,6 +11,9 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
     }
 
     construct {
+        unowned var granite_settings = Granite.Settings.get_default ();
+        unowned var gtk_settings = Gtk.Settings.get_default ();
+
         // Title
         var title_label = new Gtk.Label (note.title) {
             halign = START,
@@ -73,8 +76,6 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
 
         child = box;
 
-        add_css_class ("note");
-
         // Bindings
         note.bind_property ("title", title_label, "label", BindingFlags.SYNC_CREATE);
         note.bind_property ("content_md", content_label, "label", BindingFlags.SYNC_CREATE, (binding, srcval, ref targetval) => {
@@ -88,5 +89,28 @@ public class Scribble.Widgets.NoteRow : Gtk.ListBoxRow {
 
 		    return true;
         });
+
+        // Styling
+        add_css_class ("note");
+
+        /*Scribble.Application.theme_changed.connect ((is_dark) => {
+            change_css_classes (is_dark);
+        });*/
+
+        change_css_classes (granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK);
+        
+        granite_settings.notify["prefers-color-scheme"].connect (() => {
+            change_css_classes (granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK);
+        });
+    }
+
+    private void change_css_classes (bool dark) {
+        if (dark == true) {
+            add_css_class ("dark-theme");
+            remove_css_class ("light-theme");
+        } else {
+            add_css_class ("light-theme");
+            remove_css_class ("dark-theme");
+        }
     }
 }

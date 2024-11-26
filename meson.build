@@ -23,6 +23,7 @@ executable(
     'src' / 'Handler.vala',
     'src' / 'Objects' / 'Note.vala',
     'src' / 'Widgets' / 'NoteRow.vala',
+    'src' / 'Widgets' / 'EditableLabel.vala',
     dependencies: [
         dependency('granite-7'),
         dependency('gtk4'),

@@ -11,7 +11,7 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            title: _("(note title) - Scribble")
+            title: _("Scribble")
         );
     }
 
@@ -130,6 +130,20 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
 
         // Main content
 
+        // (note title)
+        var note_editable_title = new Scribble.Widgets.EditableLabel () {
+            margin_bottom = 6
+        };
+        note_editable_title.add_css_class (Granite.STYLE_CLASS_H2_LABEL);
+        
+        // (save note title changes to database)
+        note_editable_title.changed.connect (() => {
+            if (allow_note_content_save_changes == true) {
+                selected_note.title = note_editable_title.text;
+                Scribble.Application.handler.update_note_title (selected_note.id, note_editable_title.text);
+            }
+        });
+
         // (note content)
         var note_content = new Gtk.TextView ();
         var note_content_buffer = note_content.get_buffer ();
@@ -145,8 +159,13 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
             }
         });
 
+        var main_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+        main_box.add_css_class (Granite.STYLE_CLASS_BACKGROUND);
+        main_box.append (note_editable_title);
+        main_box.append (note_content);
+
         var main_scrollable_area = new Gtk.ScrolledWindow () {
-            child = note_content,
+            child = main_box,
             hexpand = true,
             vexpand = true,
             hscrollbar_policy = Gtk.PolicyType.NEVER,
@@ -207,22 +226,61 @@ public class Scribble.MainWindow : Gtk.ApplicationWindow {
 
         // When a new note is selected in the sidebar/list box...
         notes_listbox.row_selected.connect ((row) => {
-            var note_row = (Scribble.Widgets.NoteRow) row;
+            if (row != null) {
+                var note_row = (Scribble.Widgets.NoteRow) row;
 
-            // Get note
-            var note = Scribble.Application.handler.get_note (note_row.note.id);
+                // Get note
+                var note = Scribble.Application.handler.get_note (note_row.note.id);
 
-            // Set selected note
-            selected_note = note;
+                // Set selected note
+                selected_note = note;
 
-            // Save last selected note to settings
-            Scribble.Application.settings.set_string ("note-selected", note.id);
+                // Save last selected note to settings
+                Scribble.Application.settings.set_string ("note-selected", note.id);
 
-            // Update note content buffer
-            allow_note_content_save_changes = false;
-            note_content_buffer.set_text (note.content_md);
-            allow_note_content_save_changes = true;
+                // Update note title
+                note_editable_title.text = note.title;
+
+                // Update note content buffer
+                allow_note_content_save_changes = false;
+                note_content_buffer.set_text (note.content_md);
+                allow_note_content_save_changes = true;
+            } else {
+                var first_row = notes_listbox.get_row_at_index (0);
+
+                if (first_row != null) {
+                    notes_listbox.select_row (first_row);
+                }
+            }
         });
+    }
+
+    // Handle deleting a note
+    public void delete_selected_note () {
+        unowned var note_row = (Scribble.Widgets.NoteRow) notes_listbox.get_selected_row ();
+
+        var message_dialog = new Granite.MessageDialog.with_image_from_icon_name (
+            _("Delete “%s”?").printf (note_row.note.title),
+            _("The note and all its contents will be permanently deleted."),
+            "edit-delete",
+            Gtk.ButtonsType.CANCEL
+        ) {
+            badge_icon = new ThemedIcon ("dialog-question"),
+            transient_for = this
+        };
+
+        unowned var delete_button = message_dialog.add_button (_("Delete Note"), Gtk.ResponseType.YES);
+        delete_button.add_css_class (Granite.STYLE_CLASS_DESTRUCTIVE_ACTION);
+
+        message_dialog.response.connect ((response) => {
+            if (response == Gtk.ResponseType.YES) {
+                Scribble.Application.handler.delete_note (note_row.note.id);
+            }
+
+            message_dialog.destroy ();
+        });
+
+        message_dialog.present ();
     }
 
     // Creates a new note row for the notes list

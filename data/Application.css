@@ -3,10 +3,22 @@
  * SPDX-FileCopyrightText: 2024 ThatTonybo <thattonybo@gmail.com>
  */
 
-row.note:focus {
-    background-color: @base_color;
+row.note.dark-theme:focus {
+    background-color: #252525;
+}
+
+row.note.light-theme:focus {
+    background-color: #DFDFDF;
 }
 
 row.note:focus * {
     color: @text_color;
+}
+
+editable-label entry {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+    padding: 0;
 }

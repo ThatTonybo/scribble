@@ -4,9 +4,11 @@
  */
 
 public class Scribble.Application : Gtk.Application {
+    public Scribble.MainWindow main_window;
+
     public static GLib.Settings settings;
     public static Handler handler;
-    
+
     public Application () {
         Object (
             application_id: "com.thattonybo.scribble",
@@ -37,7 +39,8 @@ public class Scribble.Application : Gtk.Application {
         add_action (delete_selected_note_action);
         set_accels_for_action ("app.delete_selected_note",  {"<Control>BackSpace"});
         delete_selected_note_action.activate.connect (() => {
-            // TODO: Note deletion code, and a confirmation prompt (like Tasks/Calendar/Files/etc.)
+            // Handle deleting the selected note
+            main_window.delete_selected_note ();
         });
 
         // Dark mode
@@ -52,7 +55,7 @@ public class Scribble.Application : Gtk.Application {
     }
 
     protected override void activate () {
-        var main_window = new MainWindow (this);
+        main_window = new MainWindow (this);
 
         // (previous settings)
         settings.bind ("window-height", main_window, "default-height", GLib.SettingsBindFlags.DEFAULT);
