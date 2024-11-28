@@ -25,9 +25,10 @@ com.thattonybo.scribble
 ```
 
 ## Flatpak
-Ensure the SDK is installed:
+Ensure the SDK and Platform are installed:
 ```shell
 flatpak install --user io.elementary.Sdk//7.2
+flatpak install --user io.elementary.Platform//7.2
 ```
 Build with flatpak-builder:
 ```shell
